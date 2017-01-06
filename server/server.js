@@ -13,9 +13,24 @@ http.createServer(app).listen(3000);
 
 app.post("/startGame", function (req, res) {
   poker.startGame();
-  console.log("Player hand:\n" + JSON.stringify(poker.getPlayerHand()) + "\n");
-  console.log("Computer hand:\n" + JSON.stringify(poker.getComputerHand()) + "\n");
-  res.json({"message" : "Game start"});
+  console.log("Player hand:\n" + JSON.stringify(poker.getPlayerState()) + "\n");
+  console.log("Computer hand:\n" + JSON.stringify(poker.getComputerState()) + "\n");
+  var obj = {"player" : {}, "computer" : {}, "bank" : {}};
+  obj.player.coins = poker.getPlayerState().coins;
+  obj.computer.coins = poker.getComputerStateHiddenHand().coins;
+  obj.bank.coins = poker.getBank().coins;
+  res.json(obj);
+});
+
+app.post("/startTurn", function (req, res) {
+  poker.startTurn();
+  console.log("Player hand:\n" + JSON.stringify(poker.getPlayerState()) + "\n");
+  console.log("Computer hand:\n" + JSON.stringify(poker.getComputerState()) + "\n");
+  var obj = {"player" : {}, "computer" : {}, "bank" : {}};
+  obj.player = poker.getPlayerState();
+  obj.computer = poker.getComputerStateHiddenHand();
+  obj.bank = poker.getBank();
+  res.json(obj);
 });
 
 app.get("/getPlayerHand", function (req, res) {

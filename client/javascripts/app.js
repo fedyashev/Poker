@@ -17,16 +17,32 @@ var showHand = function (player_class, hand) {
   });
 };
 
+var refreshCoinsValues = function (obj) {
+  $("#computer-coins").text(obj.computer.coins);
+  $("#bank-coins").text(obj.bank.coins);
+  $("#player-coins").text(obj.player.coins);
+};
+
 var startGame = function () {
   $.post("/startGame", {}, function (obj) {
     console.log(obj);
+    refreshCoinsValues(obj);
   });
-  showHand(".computer-hand", computer_hand_background);
-  $.getJSON("/getPlayerHand", function (obj) {
-    console.log(obj);
-    showHand(".player-hand", obj.hand);
-  });
+  //showHand(".computer-hand", computer_hand_background);
+  //$.getJSON("/getPlayerHand", function (obj) {
+  //  console.log(obj);
+  //  showHand(".player-hand", obj.hand);
+  //});
   //$(".message").text("");
+};
+
+var startTurn = function () {
+  $.post("/startTurn", {}, function (obj) {
+    console.log(obj);
+    refreshCoinsValues(obj);
+    showHand(".computer-hand", obj.computer.hand);
+    showHand(".player-hand", obj.player.hand);
+  });
 };
 
 var setMessage = function (message, func) {
@@ -39,6 +55,8 @@ var setMessage = function (message, func) {
 };
 
 var buttonsEventListener = function () {
+  var $btnStartOpen = $(".button-open");
+
   $(".button-pass").on("click", function () {
     $.post("/hand", {"hand" : ""}, function (obj) {
       console.log(obj);
@@ -51,8 +69,9 @@ var buttonsEventListener = function () {
     });
   });
 
-  $(".button-open").on("click", function () {
-    $.post("/openCards", {}, function (json) {
+  $btnStartOpen.on("click", function () {
+    /*
+    $.post("/openCards", {"message" : $btnStartOpen.text()}, function (json) {
       console.log(json);
       showHand(".computer-hand", json.computer_hand.hand);
       setMessage(json.tour_result, startGame);
@@ -66,7 +85,15 @@ var buttonsEventListener = function () {
         //$p.remove();
       //});
       //$p.remove();
+      $btnStartOpen.text($btnStartOpen.text() === "Open" ? "Start" : "Open");
     });
+    */
+    if ($btnStartOpen.text() === "Start") {
+      startTurn();
+      $btnStartOpen.text("Open");
+    } else {
+
+    }
   });
 };
 
