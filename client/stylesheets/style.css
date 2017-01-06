@@ -1,0 +1,26 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  background: #aad;
+}
+
+header, main, footer {
+  min-width: 800px;
+}
+
+.content {
+  max-width: 800px;
+  margin: auto;
+}
+
+.player-hand img, .computer-hand img {
+  margin: 5px;
+  padding: 0px;
+}
+
+.message {
+  height: 30px;
+}
