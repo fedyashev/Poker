@@ -1,8 +1,11 @@
 var suit_array = ["diamond", "heart", "cross", "spear"];
-var rank_array = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+var rank_array = ["02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14"];
 
-var player_hand = [];
-var compter_hand = [];
+//var player_hand = [];
+//var compter_hand = [];
+
+var player = {"hand" : "", "hand_rate" : 0, "coins" : 0};
+var computer = {"hand" : "", "hand_rate" : 0, "coins" : 0};
 
 var isHandValid = function (hand) {
   var result = true;
@@ -50,23 +53,42 @@ var generateHands = function () {
       }
     }
   }
-  player_hand = card_list.slice(0, 5).sort(sortByRank);
-  computer_hand = card_list.slice(5, 10).sort(sortByRank);
+  player.hand = card_list.slice(0, 5).sort(sortByRank);
+  computer.hand = card_list.slice(5, 10).sort(sortByRank);
+};
+
+var handRank = function (hand) {
+  var rank = "";
+  hand.forEach(function (card) {
+    rank += card.rank;
+  });
+  return rank;
+};
+
+var getTourResult = function () {
+  var player_hand_rank = handRank(player.hand);
+  var computer_hand_rank = handRank(computer.hand);
+  return player_hand_rank > computer_hand_rank ? "Player win" : (player_hand_rank < computer_hand_rank ? "Computer win" : "Draw");
 };
 
 var startGame = function () {
   generateHands();
 };
 
+var startTour = function () {
+  
+};
+
 var getPlayerHand = function () {
-  return {"hand" : player_hand};
+  return {"hand" : player.hand, "rank" : handRank(player.hand)};
 };
 
 var getComputerHand = function () {
-  return {"hand" : computer_hand};
+  return {"hand" : computer.hand, "rank" : handRank(computer.hand)};
 };
 
 module.exports.getBestCombination = getBestCombination;
 module.exports.startGame = startGame;
 module.exports.getPlayerHand = getPlayerHand;
 module.exports.getComputerHand = getComputerHand;
+module.exports.getTourResult = getTourResult;

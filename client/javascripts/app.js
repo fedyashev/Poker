@@ -54,7 +54,7 @@ var buttonsEventListener = function () {
   $(".button-open").on("click", function () {
     $.post("/openCards", {}, function (json) {
       console.log(json);
-      showHand(".computer-hand", json.computer_hand);
+      showHand(".computer-hand", json.computer_hand.hand);
       setMessage(json.tour_result, startGame);
       //alert(json.tour_result);
       //var $p = $("p.message");

@@ -13,27 +13,25 @@ http.createServer(app).listen(3000);
 
 app.post("/startGame", function (req, res) {
   poker.startGame();
-  console.log("Player hand:\n" + JSON.stringify(poker.getPlayerHand().hand) + "\n");
-  console.log("Computer hand:\n" + JSON.stringify(poker.getComputerHand().hand) + "\n");
+  console.log("Player hand:\n" + JSON.stringify(poker.getPlayerHand()) + "\n");
+  console.log("Computer hand:\n" + JSON.stringify(poker.getComputerHand()) + "\n");
   res.json({"message" : "Game start"});
 });
 
 app.get("/getPlayerHand", function (req, res) {
-  var player_hand = poker.getPlayerHand();
-  res.json(player_hand);
+  res.json(poker.getPlayerHand());
   console.log("Sent to client player hand json");
-  console.log(player_hand);
 });
 
 app.get("/getComputerHand", function (req, res) {
-  console.log("Sent to client computer hand json");
   res.json(poker.getComputerHand());
+  console.log("Sent to client computer hand json");
 });
 
 app.post("/openCards", function (req, res) {
   var response_json = {};
-  response_json.computer_hand = poker.getComputerHand().hand;
-  response_json.tour_result = "Player win";
+  response_json.computer_hand = poker.getComputerHand();
+  response_json.tour_result = poker.getTourResult();
   console.log(response_json);
   res.json(response_json);
 });
