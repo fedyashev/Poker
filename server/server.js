@@ -33,22 +33,56 @@ app.post("/startTurn", function (req, res) {
   res.json(obj);
 });
 
-app.get("/getPlayerHand", function (req, res) {
-  res.json(poker.getPlayerHand());
-  console.log("Sent to client player hand json");
-});
-
-app.get("/getComputerHand", function (req, res) {
-  res.json(poker.getComputerHand());
-  console.log("Sent to client computer hand json");
-});
-
 app.post("/openCards", function (req, res) {
-  var response_json = {};
-  response_json.computer_hand = poker.getComputerHand();
-  response_json.tour_result = poker.getTourResult();
-  console.log(response_json);
-  res.json(response_json);
+  poker.openCards();
+  var obj = {"player" : {}, "computer" : {}, "bank" : {}, "message" : {}};
+  obj.player = poker.getPlayerState();
+  obj.computer = poker.getComputerState();
+  obj.bank = poker.getBank();
+  obj.message = poker.getTurnResult();
+  res.json(obj);
+});
+
+app.post("/passTurn", function (req, res) {
+  poker.playerPassTurn();
+  var obj = {"player" : {}, "computer" : {}, "bank" : {}};
+  obj.player.coins = poker.getPlayerState().coins;
+  obj.computer.coins = poker.getComputerStateHiddenHand().coins;
+  obj.bank.coins = poker.getBank().coins;
+  res.json(obj);
+});
+
+app.post("/addCoins", function (req, res) {
+  poker.playerAddCoins();
+  var obj = {"player" : {}, "computer" : {}, "bank" : {}, "message" : "", "computer_turn" : ""};
+  obj.computer_turn = poker.computerTurn();
+  if (obj.computer_turn === "Add") {
+    poker.computerAddCoins();
+    obj.player.coins = poker.getPlayerState().coins;
+    obj.computer.coins = poker.getComputerStateHiddenHand().coins;
+    obj.bank.coins = poker.getBank().coins;
+    //obj.computer_turn = computer_turn;
+    obj.message = "Computer add 10 coins";
+  }
+  if (obj.computer_turn === "Open") {
+    poker.openCards();
+    obj.player.coins = poker.getPlayerState().coins;
+    obj.computer = poker.getComputerState();
+    obj.bank.coins = poker.getBank().coins;
+    obj.message = poker.getTurnResult();
+  }
+  if (obj.computer_turn === "Pass") {
+    poker.computerPassTurn();
+    obj.player.coins = poker.getPlayerState().coins;
+    obj.computer.coins = poker.getComputerState().coins;
+    obj.bank.coins = poker.getBank().coins;
+    obj.message = "Computer pass turn. Player win.";
+  }
+  //obj.player.coins = poker.getPlayerState().coins;
+  //obj.computer.coins = poker.getComputerStateHiddenHand().coins;
+  //obj.bank.coins = poker.getBank().coins;
+  //obj.computer_turn = computer_turn;
+  res.json(obj);
 });
 
 console.log("Server start on port 3000");

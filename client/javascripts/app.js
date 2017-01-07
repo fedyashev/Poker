@@ -23,6 +23,10 @@ var refreshCoinsValues = function (obj) {
   $("#player-coins").text(obj.player.coins);
 };
 
+var setMessage = function (message) {
+  $("#message").text(message);
+};
+
 var startGame = function () {
   $.post("/startGame", {}, function (obj) {
     console.log(obj);
@@ -42,31 +46,56 @@ var startTurn = function () {
     refreshCoinsValues(obj);
     showHand(".computer-hand", obj.computer.hand);
     showHand(".player-hand", obj.player.hand);
+    setMessage("Start turn");
   });
 };
 
-var setMessage = function (message, func) {
-  var $p = $(".message");
-  $p.text(message);
-  setTimeout(function() {
-    $p.text("");
-    func();
-  }, 3000);
+var openCards = function () {
+  $.post("/openCards", {}, function (obj) {
+    console.log(obj);
+    refreshCoinsValues(obj);
+    showHand(".computer-hand", obj.computer.hand);
+    setMessage("Player open cards. " + obj.message);
+  });
+};
+
+var playerPassTurn = function () {
+  $.post("/passTurn", {}, function (obj) {
+    console.log(obj);
+    refreshCoinsValues(obj);
+    setMessage("Player pass. Computer win.");
+    $("#button-open").text("Start");
+  });
+};
+
+var playerAddCoins = function () {
+  $.post("/addCoins", function (obj) {
+    console.log(obj);
+    refreshCoinsValues(obj);
+    if (obj.computer_turn === "Add") {
+      setMessage(obj.message);
+    }
+    if (obj.computer_turn === "Open") {
+      setMessage("Computer open cards. " + obj.message);
+      showHand(".computer-hand", obj.computer.hand);
+      $("#button-open").text("Start");
+    }
+    if (obj.computer_turn === "Pass") {
+      setMessage(obj.message);
+      $("#button-open").text("Start");
+    }
+  });
 };
 
 var buttonsEventListener = function () {
-  var $btnStartOpen = $(".button-open");
+  var $btnStartOpen = $("#button-open");
 
-  $(".button-pass").on("click", function () {
-    $.post("/hand", {"hand" : ""}, function (obj) {
-      console.log(obj);
-    });
+  $("#button-pass").on("click", function () {
+    if ($("#button-open").text() === "Open") playerPassTurn();
   });
 
-  $(".button-add").on("click", function () {
-    $.post("/hand", {"hand" : ""}, function (obj) {
-      console.log(obj);
-    });
+  $("#button-add").on("click", function () {
+    if ($("#button-open").text() === "Open") playerAddCoins();
   });
 
   $btnStartOpen.on("click", function () {
@@ -92,7 +121,8 @@ var buttonsEventListener = function () {
       startTurn();
       $btnStartOpen.text("Open");
     } else {
-
+      openCards();
+      $btnStartOpen.text("Start");
     }
   });
 };
